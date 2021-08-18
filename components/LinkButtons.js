@@ -1,11 +1,20 @@
 import axios from "axios";
 import { useState } from "react";
 import validator from "validator";
+import ReactGoogleSheets from "react-google-sheets";
+import { google } from "googleapis";
+import credentials from "../credentials.json";
 const LinkButtons = ({ className }) => {
   const [email, setEmail] = useState("");
   const [success, setSuccess] = useState(null);
   const handleSubmit = (e) => {
     e.preventDefault();
+    const auth = new google.auth.GoogleAuth({
+      keyFile: credentials,
+      scopes: "https://www.googleapis.com/auth/spreadsheets",
+    });
+    const client = await auth.getClient();
+    const googleSheets = google.sheets({ version: "v4", auth: client });
     if (validator.isEmail(email)) {
       if (email !== "") {
         axios
@@ -49,7 +58,7 @@ const LinkButtons = ({ className }) => {
       {success === null || success === false ? (
         <>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-3/4 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="email"
             type="text"
             placeholder="Email"
